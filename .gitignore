@@ -10,9 +10,3 @@ npm-debug.log
 # Docker
 Dockerfile
 docker-compose.yml
-
-# PouchDB
-database/pouchdb/dbs/*
-database/pouchdb/logs/*
-database/pouchdb/config.json
-
