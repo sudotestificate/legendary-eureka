@@ -10,12 +10,16 @@ let database = PouchDB.defaults({
 
 express()
   .use(function(req, res, next) {
+    
+    // Allow every domain
+    res.header("Access-Control-Allow-Origin", req.headers.origin);
 
-    const allowedOrigins = ['http://localhost:9000', 'http://192.168.43.29:9000']
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) {
-      res.setHeader('Access-Control-Allow-Origin', origin);
-    }
+    // Whitlist
+    // const allowedOrigins = ['http://localhost:9000']
+    // const origin = req.headers.origin;
+    // if (allowedOrigins.includes(origin)) {
+    //   res.setHeader('Access-Control-Allow-Origin', origin);
+    // }
 
     // res.header("Access-Control-Allow-Origin", "*");
     // res.header("Access-Control-Allow-Origin", "http://localhost:9000");
