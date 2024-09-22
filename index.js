@@ -4,12 +4,12 @@ const path = require('path')
 const PORT = process.env.PORT || 5000
 
 const database = PouchDB.defaults({
-  prefix: process.cwd() + 'database/pouchdb/dbs/',
+  prefix: process.cwd() + '/database/pouchdb/dbs/',
 })
 
 const expressPouchDB = require('express-pouchdb')(database, {
-  logPath: process.cwd() + 'database/pouchdb/logs/log.txt',
-  configPath: process.cwd() + 'database/pouchdb/config.json',
+  logPath: process.cwd() + '/database/pouchdb/logs/log.txt',
+  configPath: process.cwd() + '/database/pouchdb/config.json',
 })
 
 expressPouchDB.couchConfig.set('admins', process.env.POUCHDB_USERNAME, process.env.POUCHDB_PASSWORD, err => console.log(err))
