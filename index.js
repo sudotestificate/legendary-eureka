@@ -12,7 +12,7 @@ const expressPouchDB = require('express-pouchdb')(database, {
   configPath: './database/pouchdb/config.json',
 })
 
-expressPouchDB.couchConfig.set('admins', 'anna', 'secret', err => console.log(err))
+expressPouchDB.couchConfig.set('admins', process.env.POUCHDB_USERNAME, process.env.POUCHDB_PASSWORD, err => console.log(err))
 
 express()
   .use(function(req, res, next) {
