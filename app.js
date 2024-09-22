@@ -8,8 +8,7 @@ const database = PouchDB.defaults({
 })
 
 const expressPouchDB = require('express-pouchdb')(database, {
-  logPath: './.data/database/pouchdb/logs/log.txt',
-  configPath: './.data/database/pouchdb/config.json',
+  logPath: './.data/database/pouchdb/logs/log.txt'
 })
 
 expressPouchDB.couchConfig.set('admins', process.env.POUCHDB_USERNAME, process.env.POUCHDB_PASSWORD, err => console.log(err))
