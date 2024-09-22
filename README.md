@@ -1,1 +1,1 @@
-# Let's Go Glitch
+# Remixable PouchDB Express Server
