@@ -1,32 +1,56 @@
-const PouchDB = require('pouchdb')
-const express = require('express')
-const path = require('path')
-const PORT = process.env.PORT || 5000
+// app.js — Cloudflare Worker version of your Express + PouchDB app
 
-const database = PouchDB.defaults({
-  prefix: './.data/database/pouchdb/dbs/',
-})
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
 
-const expressPouchDB = require('express-pouchdb')(database, {
-  logPath: './.data/database/pouchdb/logs/log.txt'
-})
-
-expressPouchDB.couchConfig.set('admins', process.env.POUCHDB_USERNAME, process.env.POUCHDB_PASSWORD, err => console.log(err))
-
-express()
-  .use(function(req, res, next) {
-    
-    // Allow every domain
-    res.header("Access-Control-Allow-Origin", req.headers.origin);
-    res.header("Access-Control-Allow-Credentials", true);
-    res.header("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization");
-  
-    if (req.method === "OPTIONS") {
-      res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
-      return res.status(200).json({});
+    // --- 1️⃣ Handle CORS preflight ---
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': request.headers.get('Origin') || '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          'Access-Control-Allow-Credentials': 'true',
+        },
+      });
     }
 
-    next();
-  })
-  .use(express.static(path.join(__dirname, 'public')), expressPouchDB)
-  .listen(PORT, () => console.log(`Listening on ${ PORT }`))
+    // --- 2️⃣ CORS headers for all responses ---
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': request.headers.get('Origin') || '*',
+      'Access-Control-Allow-Credentials': 'true',
+    };
+
+    // --- 3️⃣ Simple KV "database" routes ---
+    if (url.pathname.startsWith('/api/data')) {
+      const key = url.searchParams.get('key');
+
+      if (request.method === 'GET') {
+        const value = await env.MY_DB.get(key);
+        return new Response(value ?? 'null', { headers: corsHeaders });
+      }
+
+      if (request.method === 'POST') {
+        const body = await request.json();
+        await env.MY_DB.put(key, JSON.stringify(body));
+        return new Response('Saved', { headers: corsHeaders });
+      }
+
+      if (request.method === 'DELETE') {
+        await env.MY_DB.delete(key);
+        return new Response('Deleted', { headers: corsHeaders });
+      }
+
+      return new Response('Method not allowed', { status: 405, headers: corsHeaders });
+    }
+
+    // --- 4️⃣ Static file serving from /public ---
+    try {
+      return await env.ASSETS.fetch(request);
+    } catch (err) {
+      return new Response('Not found', { status: 404, headers: corsHeaders });
+    }
+  },
+};

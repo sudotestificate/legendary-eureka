@@ -1,0 +1,27 @@
+name = "legendary-eureka"
+main = "app.js"   # or "index.js" if your entry file is at root
+compatibility_date = "2025-10-20"
+
+# Uncomment if you want to deploy to a custom route
+# routes = [
+#   { pattern = "yourdomain.com/*", zone_name = "yourdomain.com" }
+# ]
+
+# Use the following for custom environments
+[env.production]
+POUCHDB_USERNAME=wrangler
+POUCHDB_PASSWORD=demodemo123
+
+# Serve static files from /public
+[site]
+bucket = "./public"
+
+[vars]
+ENVIRONMENT = "development"
+
+# Optional: Enable node_compat if using npm packages that rely on Node APIs
+node_compat = true
+
+[[kv_namespaces]]
+binding = "KV"
+id = "dfd08fa7ecbc4756ad2fedd4a9b06546"  # replace after you create KV namespace
