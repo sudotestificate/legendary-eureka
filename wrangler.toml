@@ -9,8 +9,8 @@ compatibility_date = "2025-10-20"
 
 # Use the following for custom environments
 [env.production]
-POUCHDB_USERNAME=wrangler
-POUCHDB_PASSWORD=demodemo123
+POUCHDB_USERNAME = "wrangler"
+POUCHDB_PASSWORD = "demodemo123"
 
 # Serve static files from /public
 [site]
